@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class Sessions extends StatefulWidget {
+class Sessions2 extends StatefulWidget {
   @override
-  _SessionsState createState() => _SessionsState();
+  _Sessions2State createState() => _Sessions2State();
 }
 
-class _SessionsState extends State<Sessions> {
+class _Sessions2State extends State<Sessions2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

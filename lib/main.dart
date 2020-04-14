@@ -5,37 +5,27 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-
-      
-
-      title: 'Flutter Demo',
       theme: new ThemeData(
         primarySwatch: Colors.red,
-        scaffoldBackgroundColor: Colors.black,
-        
-        
+        scaffoldBackgroundColor: Colors.black,      
       ),
-      home: 
-      
+      home:      
       new HomePage("COVID"),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  
-
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
-
 class _MyHomePageState extends State<MyHomePage> {
 
   Future<List<User>> _getUsers() async {
@@ -45,50 +35,31 @@ class _MyHomePageState extends State<MyHomePage> {
     var jsonData = json.decode(data.body);
   
     List<User> users = [];
-    
-    
+   
    // print(jsonData);
-    
+    var now = new DateTime.now();
+var formatter = new DateFormat('MM');
+String month = formatter.format(now);
+print(month);
     for(var u in jsonData["cases_time_series"]){
-     
-
-      User user = User(u["dailyconfirmed"], u["dailyconfirmed"], u["date"], u["totalconfirmed"], u["totalrecovered"]);
-    
-      users.add(user);
-    
+      User user = User(u["dailyconfirmed"], u["dailyconfirmed"], u["date"], u["totalconfirmed"], u["totalrecovered"]);   
+      users.add(user);   
     }
-
-  
-
     return users;
-
   }
-
+  TextEditingController editingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return new Scaffold (
-
-      
-        
-
-
-
       appBar: new AppBar(
         title: new Text("DATE WISE DATA"),
-
-        
-
-
       ),
-      body: 
-      
-      
-      
+      body:      
       Container(
-          child: FutureBuilder(
+          child:         
+          FutureBuilder(
             future: _getUsers(),
-            builder: (BuildContext context, AsyncSnapshot snapshot){
-              
+            builder: (BuildContext context, AsyncSnapshot snapshot){            
               if(snapshot.data == null){
                 return Container(
                   child: Center(
@@ -99,20 +70,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return new Card(
-                    
-                    shape: RoundedRectangleBorder(
-                      
+                    return new Card(                    
+                    shape: RoundedRectangleBorder(                     
       borderRadius: BorderRadius.circular(15.0),
-    ),
-    
+    ),    
                 child: new Container(
                   width: 200,
                   color: Colors.redAccent,
                   padding: EdgeInsets.all(5.0),
                   child: new Column(
-                    children: <Widget>[
-                      
+                    children: <Widget>[                     
                       new Text('Date: '+snapshot.data[index].date ,textAlign: TextAlign.left,textScaleFactor: 1.7,),
                       new Text('Daily Confirmed: '+snapshot.data[index].dailyconfirmed,textScaleFactor: 1.25),
                       new Text('Total Confirmed: '+snapshot.data[index].totalconfirmed,textScaleFactor: 1.25),
@@ -131,24 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 }
-
-class DetailPage extends StatelessWidget {
-
-  final User user;
-
-  DetailPage(this.user);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(user.date),
-        )
-    );
-  }
-}
-
-
 class User {
   final String index;
   final String dailyconfirmed;
@@ -184,6 +133,7 @@ class _HomePageState extends State<HomePage> {
               appBar: AppBar(
                 title: const Text('COVID19'),
                  
+                 
                 backgroundColor: Colors.black,
               ),
               body: CupertinoTabScaffold(
@@ -191,15 +141,15 @@ class _HomePageState extends State<HomePage> {
                   items: const <BottomNavigationBarItem>[
                     BottomNavigationBarItem(
                       icon: Icon(Icons.home),
-                      title: Text('Sessions'),
+                      title: Text('Date'),
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.mic),
-                      title: Text('Speakers'),
+                      icon: Icon(Icons.add_circle),
+                      title: Text('State'),
                     ),
                     BottomNavigationBarItem(
                       icon: Icon(Icons.school),
-                      title: Text('Partners'),
+                      title: Text('News'),
                     ),
                   ],
                 ),
@@ -241,13 +191,16 @@ class _MyHomePage2State extends State<MyHomePage2> {
   Future<List<User2>> _getUsers() async {
 
     var data = await http.get("https://api.covid19india.org/data.json");
+    var data1=await http.get("https://coronavirus-19-api.herokuapp.com/all");
+    var j=json.decode(data1.body);
   
     var jsonData = json.decode(data.body);
   
     List<User2> users = [];
     
+    User2 user = User2("global",j["cases"].toString(), j["deaths"].toString(),"Global", j["recovered"].toString(),"GB");
+    users.add(user);
     
-   // print(jsonData);
   
     for(var u in jsonData["statewise"]){
     
@@ -276,8 +229,32 @@ class _MyHomePage2State extends State<MyHomePage2> {
 
       appBar: new AppBar(
         title: new Text("STATE WISE DATA"),
+       
 
-        
+        actions: <Widget>[
+    Padding(
+      padding: EdgeInsets.only(right: 20.0),
+      child: GestureDetector(
+        onTap: () {},
+        child: RaisedButton(child: new Text("Graph!"),
+        textColor: Colors.white,
+                         shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          elevation: 2,
+                                               
+                          color: Color.fromRGBO(0, 0, 0, 1),
+                          padding: const EdgeInsets.all(8.0),
+                          
+                          onPressed: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => Sessions2()),
+  );
+}
+                          
+                          )
+      )
+    ),],
 
 
       ),
@@ -314,7 +291,7 @@ class _MyHomePage2State extends State<MyHomePage2> {
                   child: new Column(
                     children: <Widget>[
                       
-                      new Text('State: '+snapshot.data[index].state ,textAlign: TextAlign.left,textScaleFactor: 1.7,),
+                      new Text('State: '+snapshot.data[index].state +" ("+snapshot.data[index].statecode+")",textAlign: TextAlign.left,textScaleFactor: 1.7,),
                       new Text('Total Confirmed: '+snapshot.data[index].confirmed,textScaleFactor: 1.25),
                       new Text('Total Recovered: '+snapshot.data[index].recovered,textScaleFactor: 1.25),
                       new Text('Total Deaths: '+snapshot.data[index].deaths,textScaleFactor: 1.25),
@@ -457,12 +434,20 @@ class _MyHomePage3State extends State<MyHomePage3> {
                       new Text('Title: '+snapshot.data[index].title ,textAlign: TextAlign.left,textScaleFactor: 1.3),
                       new SizedBox(height: 2.0,),
                       new Text('Description: '+snapshot.data[index].description,textScaleFactor: 1.3),
-                      new RaisedButton(onPressed: () {
+                      new RaisedButton(
+                         child: new Text("Show More!"),
+                         shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          elevation: 3,
+                          textColor: Colors.white,
+                          color: Color.fromRGBO(0, 0, 0, 1),
+                          padding: const EdgeInsets.all(8.0),
+                        onPressed: () {
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => Sessions(snapshot.data[index].url)),
   );
-},textColor: Colors.white, child: new Text("Show More!"),
+}
                       ),
                   //    new Text('Total Recovered: '+snapshot.data[index].url,textScaleFactor: 1.25),
                     //  new Text('Total Deaths: '+snapshot.data[index].urli,textScaleFactor: 1.25),
